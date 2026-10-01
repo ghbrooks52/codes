@@ -1,0 +1,22 @@
+import arcpy
+
+target_layer = "CalTopo_Export_Polygons2" 
+name_field = "Name"
+output_gdb = r"C:\Users\Gavin Brooks\Desktop\TERA GIS\Lake_Mendo_practice\Lake_Mendo_practice.gdb" # Path to your target geodatabase
+
+custom_groups = {
+    "Trees": ["Zone 1 Trees", "Zone 2 Trees"],
+    "Boundries": ["Approximate potential burn unit", "Property line - Oja Robinson"],
+    
+for group_name, names in custom_groups.items():
+    formatted_names = ", ".join(f"'{n}'" for n in names)
+    sql_query = f"{name_field} IN ({formatted_names})"
+    
+   
+    arcpy.management.SelectLayerByAttribute(target_layer, "NEW_SELECTION", sql_query)
+    
+    output_path = f"{output_gdb}\\{group_name}"
+    arcpy.conversion.ExportFeatures(target_layer, output_path)
+    print(f"Successfully created: {group_name}")
+
+arcpy.management.SelectLayerByAttribute(target_layer, "CLEAR_SELECTION")
